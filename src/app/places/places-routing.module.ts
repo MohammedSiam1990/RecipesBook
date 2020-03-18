@@ -35,7 +35,7 @@ const routes: Routes = [
               './offers/new-offer/new-offer.module#NewOfferPageModule'
           },
           {
-            path: 'edit/placeId',
+            path: 'edit/:placeId',
             loadChildren:
               './offers/edit-offer/edit-offer.module#EditOfferPageModule'
           },

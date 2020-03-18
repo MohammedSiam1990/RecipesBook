@@ -4,7 +4,7 @@
 /** Ionic CSS Variables **/
 :root {
   /** primary **/
-  --ion-color-primary: #3880ff;
+  --ion-color-primary: hsl(268, 100%, 61%);
   --ion-color-primary-rgb: 56, 128, 255;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
@@ -74,4 +74,17 @@
   --ion-color-light-contrast-rgb: 0, 0, 0;
   --ion-color-light-shade: #d7d8da;
   --ion-color-light-tint: #f5f6f9;
+
+// New 8. Styling Core Components with Variables
+  --ion-toolbar-background: var(--ion-color-primary);	
+  --ion-toolbar-color: var(--ion-color-primary-contrast);
+}
+
+ion-button {
+  --box-shadow:2px 2px 2px 2px rgba(0,0,0,0.6)
+}
+
+
+.ios {
+  --ion-color-primary: #ff3874;
 }

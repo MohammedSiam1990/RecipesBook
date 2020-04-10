@@ -16,15 +16,26 @@ export class DiscoverPage implements OnInit, OnDestroy {
   listedLoadedPlaces: Place[];
   relevantPlaces: Place[];
   private placeSub: Subscription;
+  isLoading = false;
 
-  constructor(private placesService: PlacesService, private menuCtrl: MenuController,
-              private authService: AuthService) { }
+  constructor(
+    private placesService: PlacesService,
+    private menuCtrl: MenuController,
+    private authService: AuthService
+  ) {}
 
   ngOnInit() {
-    this.placeSub = this.placesService.places.subscribe(place => {
+    this.placeSub = this.placesService.places.subscribe((place) => {
       this.loadPlaces = place;
       this.relevantPlaces = this.loadPlaces;
       this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+    });
+  }
+
+  ionViewWillEnter() {
+    this.isLoading = true;
+    this.placesService.fetchPlaces().subscribe(() => {
+      this.isLoading = false;
     });
   }
 
@@ -38,7 +49,9 @@ export class DiscoverPage implements OnInit, OnDestroy {
       this.listedLoadedPlaces = this.relevantPlaces.slice(1);
     } else {
       console.log(this.authService.userId);
-      this.relevantPlaces = this.loadPlaces.filter(place => place.userId !== this.authService.userId);
+      this.relevantPlaces = this.loadPlaces.filter(
+        (place) => place.userId !== this.authService.userId
+      );
       this.listedLoadedPlaces = this.relevantPlaces.slice(1);
     }
     console.log(event.detail);
@@ -49,5 +62,4 @@ export class DiscoverPage implements OnInit, OnDestroy {
       this.placeSub.unsubscribe();
     }
   }
-
 }

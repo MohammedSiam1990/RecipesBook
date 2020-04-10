@@ -30,6 +30,8 @@ export class EditOfferPage implements OnInit, OnDestroy {
       this.placeSub = this.placesService.getPlace(paramMap.get('placeId')).subscribe(place => {
          this.place = place;
        });
+      console.log(this.place);
+      console.log(paramMap.get('placeId'));
 
       this.form = new FormGroup({
         title: new FormControl(this.place.title, {

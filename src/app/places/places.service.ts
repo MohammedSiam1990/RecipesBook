@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Place } from './Place.Model';
 import { AuthService } from '../auth/auth.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { take, map, tap, delay, switchMap } from 'rxjs/operators';
 
 // [
@@ -87,13 +87,28 @@ export class PlacesService {
   }
 
   get places() {
-    return this._places;
+    return this._places.asObservable();
   }
 
   getPlace(id: string) {
-    return this.places.pipe(take(1), map(places => {
-      return { ...places.find(p => p.id === id) };
-    })
+    console.log(id);
+    return this.http
+    .get<PlaceData>(
+      `https://recipesbook-fb9fb.firebaseio.com/offered-places/${id}.json`
+    )
+    .pipe(
+      map(placeData => {
+        return new Place(
+          id,
+          placeData.title,
+          placeData.description,
+          placeData.imageUrl,
+          placeData.price,
+          new Date(placeData.availableFrom),
+          new Date(placeData.availableTo),
+          placeData.userId
+        );
+      })
     );
   }
 
@@ -130,10 +145,20 @@ export class PlacesService {
     //     this._places.next(places.concat(newPlace));
     // }));
   }
+
   updatePlace(placeId: string, title: string, description: string) {
+    // tslint:disable-next-line: no-debugger
+    debugger;
     let updatedPlaces: Place[];
     return this.places.pipe(
       take(1),
+      switchMap(places => {
+        if (!places || places.length <= 0) {
+          return this.fetchPlaces();
+        } else {
+          return of(places);
+        }
+      }),
       switchMap(places => {
         const updatedPlaceIndex = places.findIndex(pl => pl.id === placeId);
         updatedPlaces = [...places];

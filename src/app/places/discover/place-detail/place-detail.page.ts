@@ -13,6 +13,7 @@ import { PlacesService } from '../../places.service';
 import { Subscription } from 'rxjs';
 import { BookingService } from 'src/app/bookings/booking.service';
 import { AuthService } from 'src/app/auth/auth.service';
+import { MapModelComponent } from 'src/app/shared/map-model/map-model.component';
 
 @Component({
   selector: 'app-place-detail',
@@ -141,6 +142,24 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
                 });
             });
         }
+      });
+  }
+  onShowFullMap() {
+    this.modalCtrl
+      .create({
+        component: MapModelComponent,
+        componentProps: {
+          center: {
+            lat: this.place.location.lat,
+            lng: this.place.location.lng
+          },
+          selectable: false,
+          closeButtonText: 'Close',
+          title: this.place.location.address
+        }
+      })
+      .then(modalEl => {
+        modalEl.present();
       });
   }
 

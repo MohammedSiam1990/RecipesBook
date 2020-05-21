@@ -40,7 +40,6 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
 
   ngOnInit() {
     // tslint:disable-next-line: no-debugger
-    debugger;
     this.route.paramMap.subscribe((paramMap) => {
       console.log('Cheak Place');
       if (!paramMap.has('placeId')) {
@@ -145,6 +144,7 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
       });
   }
   onShowFullMap() {
+    console.log('onShowFullMap');
     this.modalCtrl
       .create({
         component: MapModelComponent,

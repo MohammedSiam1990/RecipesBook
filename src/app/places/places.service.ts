@@ -116,36 +116,61 @@ export class PlacesService {
     );
   }
 
+  uploadImage(image: File) {
+    const uploadData = new FormData();
+    uploadData.append('image', image);
+    return this.http.post<{imageUrl: string, imagePath: string}>(
+      'https://us-central1-recipesbook-fb9fb.cloudfunctions.net/storeImage',
+      uploadData
+    );
+  }
+
   addPlace(
     title: string,
     description: string,
     price: number,
     dateFrom: Date,
     dateTo: Date,
-    location: PlaceLocation
+    location: PlaceLocation,
+    imageUrl: string
   ) {
     let generatedId: string;
-    const newPlace = new Place(
+    let newPlace: Place;
+    return this.authService.userId.pipe(
+      take(1),
+      switchMap(userId => {
+        if (!userId) {
+          throw new Error('No user found!');
+        }
+        newPlace = new Place(
       Math.random().toString(),
       title,
       description,
+      // imageUrl,
       'https://upload.wikimedia.org/wikipedia/commons/0/01/San_Francisco_with_two_bridges_and_the_fog.jpg',
       price,
       dateFrom,
       dateTo,
-      this.authService.userId,
+      userId,
       location
     );
-    return this.http.post<{ name: string }>('https://recipesbook-fb9fb.firebaseio.com/offered-places.json',
-     { ...newPlace, id: null}).pipe(switchMap(resData => {
-       generatedId = resData.name;
-       return this.places;
-     }),
-     take(1),
-     tap(places => {
-        newPlace.id = generatedId;
-        this._places.next(places.concat(newPlace));
-     }));
+        return this.http.post<{ name: string }>(
+      'https://recipesbook-fb9fb.firebaseio.com/offered-places.json',
+      {
+        ...newPlace,
+        id: null
+      }
+    );
+    }),
+    switchMap(resData => {
+      generatedId = resData.name;
+      return this.places;
+    }),
+    take(1),
+    tap(places => {
+      newPlace.id = generatedId;
+      this._places.next(places.concat(newPlace));
+    }));
     // this._places.push(newPlace);
     // return this.places.pipe(take(1), delay(1000), tap(places => {
     //     this._places.next(places.concat(newPlace));

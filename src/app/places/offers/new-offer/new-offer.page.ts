@@ -4,6 +4,7 @@ import { PlacesService } from '../../places.service';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
 import { PlaceLocation } from '../../location.model';
+import { switchMap } from 'rxjs/operators';
 function base64toBlob(base64Data, contentType) {
   // tslint:disable-next-line: no-debugger
   debugger;
@@ -108,16 +109,30 @@ export class NewOfferPage implements OnInit {
       })
       .then(loadingEl => {
         loadingEl.present();
-        // tslint:disable-next-line: max-line-length
         this.placeService
-          .addPlace(
-            this.form.value.title,
-            this.form.value.description,
-            +this.form.value.price,
-            new Date(this.form.value.dateFrom),
-            new Date(this.form.value.dateTo),
-            this.form.value.location
-          )
+        .uploadImage(this.form.get('image').value)
+        .pipe(
+          switchMap(uploadRes => {
+            return this.placeService.addPlace(
+              this.form.value.title,
+              this.form.value.description,
+              +this.form.value.price,
+              new Date(this.form.value.dateFrom),
+              new Date(this.form.value.dateTo),
+              this.form.value.location,
+               uploadRes.imageUrl
+            );
+          })
+        )
+        // this.placeService
+        //   .addPlace(
+        //     this.form.value.title,
+        //     this.form.value.description,
+        //     +this.form.value.price,
+        //     new Date(this.form.value.dateFrom),
+        //     new Date(this.form.value.dateTo),
+        //     this.form.value.location
+        //   )
           .subscribe(() => {
             // tslint:disable-next-line: no-unused-expression
             loadingEl.dismiss();
